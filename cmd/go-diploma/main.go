@@ -18,10 +18,10 @@ func main() {
 	flag.Parse()
 
 	r := mux.NewRouter()
-	// Add your routes as needed
+	r.HandleFunc("/", handleConnection)
 
 	srv := &http.Server{
-		Addr: "0.0.0.0:8080",
+		Addr: "127.0.0.1:8282",
 		// Good practice to set timeouts to avoid Slowloris attacks.
 		WriteTimeout: time.Second * 15,
 		ReadTimeout:  time.Second * 15,
@@ -55,4 +55,9 @@ func main() {
 	// to finalize based on context cancellation.
 	log.Println("shutting down")
 	os.Exit(0)
+}
+
+func handleConnection(w http.ResponseWriter, r *http.Request) {
+	w.WriteHeader(http.StatusOK)
+	w.Write([]byte("OK"))
 }
