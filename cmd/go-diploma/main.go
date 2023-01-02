@@ -4,9 +4,10 @@ import (
 	"context"
 	"flag"
 	"fmt"
-	"github.com/mishut/go-diploma/internal/app/storage/codes"
-	"github.com/mishut/go-diploma/internal/app/storage/sms"
-	"github.com/mishut/go-diploma/pkg/filereader"
+	"github.com/admsvist/go-diploma/internal/app/storage/codes"
+	"github.com/admsvist/go-diploma/internal/app/storage/mms"
+	"github.com/admsvist/go-diploma/internal/app/storage/sms"
+	"github.com/admsvist/go-diploma/pkg/filereader"
 	"log"
 	"net/http"
 	"os"
@@ -28,7 +29,11 @@ func main() {
 	smsDataStorage := sms.New(codeStorage)
 	smsDataStorage.Read(reader, smsDataPath)
 
+	mmsDataStorage := mms.New(codeStorage)
+	mmsDataStorage.Read("http://127.0.0.1:8383/mms")
+
 	fmt.Println(smsDataStorage.Data)
+	fmt.Println(mmsDataStorage.Data)
 }
 
 func qmain() {

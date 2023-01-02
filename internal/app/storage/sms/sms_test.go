@@ -2,8 +2,8 @@ package sms
 
 import (
 	"fmt"
-	"github.com/mishut/go-diploma/internal/app/storage/codes"
-	"github.com/mishut/go-diploma/pkg/filereader"
+	"github.com/admsvist/go-diploma/internal/app/storage/codes"
+	"github.com/admsvist/go-diploma/pkg/filereader"
 	"testing"
 )
 

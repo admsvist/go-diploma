@@ -1,7 +1,7 @@
 package sms
 
 import (
-	"github.com/mishut/go-diploma/entity"
+	"github.com/admsvist/go-diploma/entity"
 	"log"
 	"strings"
 )

@@ -1,4 +1,4 @@
-module github.com/mishut/go-diploma
+module github.com/admsvist/go-diploma
 
 go 1.19
 
