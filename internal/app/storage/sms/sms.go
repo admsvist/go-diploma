@@ -2,36 +2,36 @@ package sms
 
 import (
 	"github.com/mishut/go-diploma/entity"
-	"github.com/mishut/go-diploma/internal/app/repository/codes"
 	"log"
-	"os"
 	"strings"
 )
+
+type FileReader interface {
+	ReadFile(string) ([]byte, error)
+}
 
 type CodeRepository interface {
 	Contains(code string) bool
 }
-
-const filePath = "./../simulator/sms.data"
 
 type SmsDataStorage struct {
 	codeRepository CodeRepository
 	Data           []*entity.SMSData
 }
 
-func New() *SmsDataStorage {
+func New(codeRepository CodeRepository) *SmsDataStorage {
 	return &SmsDataStorage{
-		codeRepository: codes.New(),
+		codeRepository: codeRepository,
 	}
 }
 
-func (s *SmsDataStorage) Read() {
-	content, err := os.ReadFile(filePath)
+func (s *SmsDataStorage) Read(reader FileReader, path string) {
+	bytes, err := reader.ReadFile(path)
 	if err != nil {
-		log.Fatal(err)
+		log.Fatalln(err)
 	}
 
-	lines := strings.Split(string(content), "\n")
+	lines := strings.Split(string(bytes), "\n")
 
 	for _, line := range lines {
 		params := strings.Split(line, ";")

@@ -3,7 +3,10 @@ package main
 import (
 	"context"
 	"flag"
+	"fmt"
+	"github.com/mishut/go-diploma/internal/app/storage/codes"
 	"github.com/mishut/go-diploma/internal/app/storage/sms"
+	"github.com/mishut/go-diploma/pkg/filereader"
 	"log"
 	"net/http"
 	"os"
@@ -13,9 +16,19 @@ import (
 	"github.com/gorilla/mux"
 )
 
+const codesPath = "./codes.json"
+const smsDataPath = "./../simulator/sms.data"
+
 func main() {
-	s := sms.New()
-	s.Read()
+	reader := filereader.New()
+
+	codeStorage := codes.New()
+	codeStorage.Read(reader, codesPath)
+
+	smsDataStorage := sms.New(codeStorage)
+	smsDataStorage.Read(reader, smsDataPath)
+
+	fmt.Println(smsDataStorage.Data)
 }
 
 func qmain() {
