@@ -1,4 +1,4 @@
-package mms
+package repository
 
 import (
 	"encoding/json"
@@ -8,26 +8,15 @@ import (
 	"net/http"
 )
 
-type FileReader interface {
-	ReadFile(string) ([]byte, error)
+type MMSDataRepository struct {
+	Data []*entity.MMSData
 }
 
-type CodeRepository interface {
-	Contains(code string) bool
+func NewMMSDataRepository() *MMSDataRepository {
+	return &MMSDataRepository{}
 }
 
-type MmsDataStorage struct {
-	codeRepository CodeRepository
-	Data           []*entity.MMSData
-}
-
-func New(codeRepository CodeRepository) *MmsDataStorage {
-	return &MmsDataStorage{
-		codeRepository: codeRepository,
-	}
-}
-
-func (s *MmsDataStorage) Read(url string) {
+func (s *MMSDataRepository) LoadData(url string) {
 	// Отправить GET-запрос по указанному URL
 	response, err := http.Get(url)
 	if err != nil {

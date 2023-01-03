@@ -4,9 +4,8 @@ import (
 	"context"
 	"flag"
 	"fmt"
-	"github.com/admsvist/go-diploma/internal/app/storage/codes"
-	"github.com/admsvist/go-diploma/internal/app/storage/mms"
-	"github.com/admsvist/go-diploma/internal/app/storage/sms"
+	"github.com/admsvist/go-diploma/country_codes"
+	"github.com/admsvist/go-diploma/internal/pkg/repository"
 	"github.com/admsvist/go-diploma/pkg/filereader"
 	"log"
 	"net/http"
@@ -17,23 +16,27 @@ import (
 	"github.com/gorilla/mux"
 )
 
-const codesPath = "./codes.json"
+const countryCodesPath = "./codes.json"
 const smsDataPath = "./../simulator/sms.data"
+const voiceCallDataPath = "./../simulator/voice.data"
 
 func main() {
 	reader := filereader.New()
 
-	codeStorage := codes.New()
-	codeStorage.Read(reader, codesPath)
+	country_codes.Init(reader, countryCodesPath)
 
-	smsDataStorage := sms.New(codeStorage)
-	smsDataStorage.Read(reader, smsDataPath)
+	smsDataRepository := repository.NewSMSDataRepository()
+	smsDataRepository.LoadData(reader, smsDataPath)
 
-	mmsDataStorage := mms.New(codeStorage)
-	mmsDataStorage.Read("http://127.0.0.1:8383/mms")
+	mmsDataRepository := repository.NewMMSDataRepository()
+	mmsDataRepository.LoadData("http://127.0.0.1:8383/mms")
 
-	fmt.Println(smsDataStorage.Data)
-	fmt.Println(mmsDataStorage.Data)
+	voiceCallDataRepository := repository.NewVoiceCallDataRepository()
+	voiceCallDataRepository.LoadData(reader, voiceCallDataPath)
+
+	fmt.Println(smsDataRepository.Data)
+	fmt.Println(mmsDataRepository.Data)
+	fmt.Println(voiceCallDataRepository.Data)
 }
 
 func qmain() {
