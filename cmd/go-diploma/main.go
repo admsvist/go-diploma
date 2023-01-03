@@ -19,6 +19,7 @@ import (
 const countryCodesPath = "./codes.json"
 const smsDataPath = "./../simulator/sms.data"
 const voiceCallDataPath = "./../simulator/voice.data"
+const emailDataPath = "./../simulator/email.data"
 
 func main() {
 	reader := filereader.New()
@@ -34,9 +35,13 @@ func main() {
 	voiceCallDataRepository := repository.NewVoiceCallDataRepository()
 	voiceCallDataRepository.LoadData(reader, voiceCallDataPath)
 
+	emailDataRepository := repository.NewEmailDataRepository()
+	emailDataRepository.LoadData(reader, emailDataPath)
+
 	fmt.Println(smsDataRepository.Data)
 	fmt.Println(mmsDataRepository.Data)
 	fmt.Println(voiceCallDataRepository.Data)
+	fmt.Println(emailDataRepository.Data)
 }
 
 func qmain() {

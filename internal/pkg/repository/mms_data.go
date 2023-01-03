@@ -2,6 +2,7 @@ package repository
 
 import (
 	"encoding/json"
+	"github.com/admsvist/go-diploma/country_codes"
 	"github.com/admsvist/go-diploma/entity"
 	"io"
 	"log"
@@ -35,15 +36,22 @@ func (s *MMSDataRepository) LoadData(url string) {
 	}
 
 	// Декодировать JSON-массив в слайс структуры MMSData
-	err = json.Unmarshal(bytes, &s.Data)
+	data := []*entity.MMSData{}
+	err = json.Unmarshal(bytes, &data)
 	if err != nil {
 		log.Fatalln(err)
 	}
 
-	//// Провалидировать каждую структуру User
-	//for _, user := range users {
-	//	if err := user.validate(); err != nil {
-	//		return nil, err
-	//	}
-	//}
+	// Провалидировать каждую структуру MMSData
+	for i, mmsData := range data {
+		if !country_codes.Exists(mmsData.Country) {
+			continue
+		}
+
+		if !contains([]string{"Topolo", "Rond", "Kildy"}, mmsData.Provider) {
+			continue
+		}
+
+		s.Data = append(s.Data, data[i])
+	}
 }
