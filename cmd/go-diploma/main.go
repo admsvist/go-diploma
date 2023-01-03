@@ -20,6 +20,10 @@ const countryCodesPath = "./codes.json"
 const smsDataPath = "./../simulator/sms.data"
 const voiceCallDataPath = "./../simulator/voice.data"
 const emailDataPath = "./../simulator/email.data"
+const billingDataPath = "./../simulator/billing.data"
+const mmsUrl = "http://127.0.0.1:8383/mms"
+const supportUrl = "http://127.0.0.1:8383/support"
+const incidentUrl = "http://127.0.0.1:8383/accendent"
 
 func main() {
 	reader := filereader.New()
@@ -30,7 +34,7 @@ func main() {
 	smsDataRepository.LoadData(reader, smsDataPath)
 
 	mmsDataRepository := repository.NewMMSDataRepository()
-	mmsDataRepository.LoadData("http://127.0.0.1:8383/mms")
+	mmsDataRepository.LoadData(mmsUrl)
 
 	voiceCallDataRepository := repository.NewVoiceCallDataRepository()
 	voiceCallDataRepository.LoadData(reader, voiceCallDataPath)
@@ -38,10 +42,22 @@ func main() {
 	emailDataRepository := repository.NewEmailDataRepository()
 	emailDataRepository.LoadData(reader, emailDataPath)
 
-	fmt.Println(smsDataRepository.Data)
-	fmt.Println(mmsDataRepository.Data)
-	fmt.Println(voiceCallDataRepository.Data)
-	fmt.Println(emailDataRepository.Data)
+	billingDataRepository := repository.NewBillingDataRepository()
+	billingDataRepository.LoadData(reader, billingDataPath)
+
+	supportDataRepository := repository.NewSupportDataRepository()
+	supportDataRepository.LoadData(supportUrl)
+
+	incidentDataRepository := repository.NewIncidentDataRepository()
+	incidentDataRepository.LoadData(incidentUrl)
+
+	//fmt.Println(smsDataRepository.Data)
+	//fmt.Println(mmsDataRepository.Data)
+	//fmt.Println(voiceCallDataRepository.Data)
+	//fmt.Println(emailDataRepository.Data)
+	//fmt.Printf("%+v\n", billingDataRepository.Data[0])
+	//fmt.Println(supportDataRepository.Data)
+	fmt.Println(incidentDataRepository.Data)
 }
 
 func qmain() {
