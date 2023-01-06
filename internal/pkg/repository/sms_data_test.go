@@ -3,21 +3,53 @@ package repository
 import (
 	"fmt"
 	"github.com/admsvist/go-diploma/country_codes"
-	"github.com/admsvist/go-diploma/pkg/filereader"
+	"os"
 	"testing"
 )
 
-func TestLoadData(t *testing.T) {
+func TestGetAll(t *testing.T) {
+	// создание временного файла
+	codesFile, err := os.CreateTemp("", "codes.json")
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer os.Remove(codesFile.Name())
+
 	countryCodesBytes := []byte(`{"US": "United States", "BL": "Saint Barthelemy"}`)
-	countryCodesFakeReader := filereader.NewFakeFileReader(countryCodesBytes, nil)
-	country_codes.Init(countryCodesFakeReader, "codes.json")
+	if _, err := codesFile.Write(countryCodesBytes); err != nil {
+		t.Fatal(err)
+	}
+	if err := codesFile.Close(); err != nil {
+		t.Fatal(err)
+	}
 
-	smsData := []byte(fmt.Sprintf("U5;41910;Topol\nUS;36;1576;Rond\nGB28495Topolo\nF2;9;484;Topolo\nBL;68;1594;Kildy"))
-	smsDataFakeReader := filereader.NewFakeFileReader(smsData, nil)
-	smsDataStorage := NewSMSDataRepository()
-	smsDataStorage.LoadData(smsDataFakeReader, "sms.data")
+	country_codes.Init(codesFile.Name())
 
-	if len(smsDataStorage.Data) != 2 {
+	// создание временного файла
+	smsDataFile, err := os.CreateTemp("", "sms.data")
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer os.Remove(smsDataFile.Name())
+
+	smsDataBytes := []byte(fmt.Sprintf("U5;41910;Topol\nUS;36;1576;Rond\nGB28495Topolo\nF2;9;484;Topolo\nBL;68;1594;Kildy"))
+	if _, err := smsDataFile.Write(smsDataBytes); err != nil {
+		t.Fatal(err)
+	}
+	if err := smsDataFile.Close(); err != nil {
+		t.Fatal(err)
+	}
+
+	smsDataStorage := SMSDataRepository{
+		Filename: smsDataFile.Name(),
+	}
+
+	entities, err := smsDataStorage.GetAll()
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	if len(entities) != 2 {
 		t.Errorf("The number of structures in the result set is different from 2")
 	}
 }

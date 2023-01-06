@@ -3,27 +3,25 @@ package repository
 import (
 	"github.com/admsvist/go-diploma/country_codes"
 	"github.com/admsvist/go-diploma/entity"
-	"log"
+	"os"
 	"strconv"
 	"strings"
 )
 
 type VoiceCallDataRepository struct {
-	Data []*entity.VoiceCallData
+	Filename string
 }
 
-func NewVoiceCallDataRepository() *VoiceCallDataRepository {
-	return &VoiceCallDataRepository{}
-}
-
-func (s *VoiceCallDataRepository) LoadData(reader FileReader, path string) {
-	bytes, err := reader.ReadFile(path)
+func (s *VoiceCallDataRepository) GetAll() ([]*entity.VoiceCallData, error) {
+	// чтение файла
+	bytes, err := os.ReadFile(s.Filename)
 	if err != nil {
-		log.Fatalln(err)
+		return nil, err
 	}
 
+	// создание списка сущностей
+	entities := make([]*entity.VoiceCallData, 0)
 	lines := strings.Split(string(bytes), "\n")
-
 	for _, line := range lines {
 		params := strings.Split(line, ";")
 		if len(params) != 8 {
@@ -47,7 +45,7 @@ func (s *VoiceCallDataRepository) LoadData(reader FileReader, path string) {
 		voicePurity, _ := strconv.Atoi(params[6])
 		medianOfCallsTime, _ := strconv.Atoi(params[7])
 
-		s.Data = append(s.Data, &entity.VoiceCallData{
+		entities = append(entities, &entity.VoiceCallData{
 			Country:             country,
 			Bandwidth:           bandwidth,
 			ResponseTime:        responseTime,
@@ -58,4 +56,6 @@ func (s *VoiceCallDataRepository) LoadData(reader FileReader, path string) {
 			MedianOfCallsTime:   medianOfCallsTime,
 		})
 	}
+
+	return entities, err
 }

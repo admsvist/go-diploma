@@ -5,44 +5,40 @@ import (
 	"github.com/admsvist/go-diploma/country_codes"
 	"github.com/admsvist/go-diploma/entity"
 	"io"
-	"log"
 	"net/http"
 )
 
 type MMSDataRepository struct {
-	Data []*entity.MMSData
+	Url string
 }
 
-func NewMMSDataRepository() *MMSDataRepository {
-	return &MMSDataRepository{}
-}
-
-func (s *MMSDataRepository) LoadData(url string) {
+func (s *MMSDataRepository) GetAll() ([]*entity.MMSData, error) {
 	// Отправить GET-запрос по указанному URL
-	response, err := http.Get(url)
+	response, err := http.Get(s.Url)
 	if err != nil {
-		log.Fatalln(err)
+		return nil, err
 	}
 	defer response.Body.Close()
 
 	if response.StatusCode != http.StatusOK {
-		return
+		return nil, err
 	}
 
 	// Прочитать содержимое ответа в байтовый срез
 	bytes, err := io.ReadAll(response.Body)
 	if err != nil {
-		log.Fatalln(err)
+		return nil, err
 	}
 
 	// Декодировать JSON-массив в слайс структуры MMSData
-	data := []*entity.MMSData{}
+	data := make([]*entity.MMSData, 0)
 	err = json.Unmarshal(bytes, &data)
 	if err != nil {
-		log.Fatalln(err)
+		return nil, err
 	}
 
 	// Провалидировать каждую структуру MMSData
+	entities := make([]*entity.MMSData, 0)
 	for i, mmsData := range data {
 		if !country_codes.Exists(mmsData.Country) {
 			continue
@@ -52,6 +48,8 @@ func (s *MMSDataRepository) LoadData(url string) {
 			continue
 		}
 
-		s.Data = append(s.Data, data[i])
+		entities = append(entities, data[i])
 	}
+
+	return entities, nil
 }

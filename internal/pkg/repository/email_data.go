@@ -3,27 +3,25 @@ package repository
 import (
 	"github.com/admsvist/go-diploma/country_codes"
 	"github.com/admsvist/go-diploma/entity"
-	"log"
+	"os"
 	"strconv"
 	"strings"
 )
 
 type EmailDataRepository struct {
-	Data []*entity.EmailData
+	Filename string
 }
 
-func NewEmailDataRepository() *EmailDataRepository {
-	return &EmailDataRepository{}
-}
-
-func (s *EmailDataRepository) LoadData(reader FileReader, path string) {
-	bytes, err := reader.ReadFile(path)
+func (s *EmailDataRepository) GetAll() ([]*entity.EmailData, error) {
+	// чтение файла
+	bytes, err := os.ReadFile(s.Filename)
 	if err != nil {
-		log.Fatalln(err)
+		return nil, err
 	}
 
+	// создание списка сущностей
+	entities := make([]*entity.EmailData, 0)
 	lines := strings.Split(string(bytes), "\n")
-
 	for _, line := range lines {
 		params := strings.Split(line, ";")
 		if len(params) != 3 {
@@ -57,10 +55,12 @@ func (s *EmailDataRepository) LoadData(reader FileReader, path string) {
 
 		deliveryTime, _ := strconv.Atoi(params[2])
 
-		s.Data = append(s.Data, &entity.EmailData{
+		entities = append(entities, &entity.EmailData{
 			Country:      country,
 			Provider:     provider,
 			DeliveryTime: deliveryTime,
 		})
 	}
+
+	return entities, nil
 }

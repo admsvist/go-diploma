@@ -3,6 +3,7 @@ package country_codes
 import (
 	"encoding/json"
 	"log"
+	"os"
 )
 
 type FileReader interface {
@@ -11,8 +12,9 @@ type FileReader interface {
 
 var countryCodes map[string]string
 
-func Init(reader FileReader, path string) {
-	bytes, err := reader.ReadFile(path)
+func Init(filename string) {
+	// чтение файла
+	bytes, err := os.ReadFile(filename)
 	if err != nil {
 		log.Fatalln(err)
 	}
@@ -30,4 +32,8 @@ func Exists(code string) bool {
 	_, ok := countryCodes[code]
 
 	return ok
+}
+
+func GetFullCountryName(code string) string {
+	return countryCodes[code]
 }

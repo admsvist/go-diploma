@@ -3,26 +3,24 @@ package repository
 import (
 	"github.com/admsvist/go-diploma/country_codes"
 	"github.com/admsvist/go-diploma/entity"
-	"log"
+	"os"
 	"strings"
 )
 
 type SMSDataRepository struct {
-	Data []*entity.SMSData
+	Filename string
 }
 
-func NewSMSDataRepository() *SMSDataRepository {
-	return &SMSDataRepository{}
-}
-
-func (s *SMSDataRepository) LoadData(reader FileReader, path string) {
-	bytes, err := reader.ReadFile(path)
+func (s *SMSDataRepository) GetAll() ([]*entity.SMSData, error) {
+	// чтение файла
+	bytes, err := os.ReadFile(s.Filename)
 	if err != nil {
-		log.Fatalln(err)
+		return nil, err
 	}
 
+	// создание списка сущностей
+	entities := make([]*entity.SMSData, 0)
 	lines := strings.Split(string(bytes), "\n")
-
 	for _, line := range lines {
 		params := strings.Split(line, ";")
 		if len(params) != 4 {
@@ -39,11 +37,13 @@ func (s *SMSDataRepository) LoadData(reader FileReader, path string) {
 			continue
 		}
 
-		s.Data = append(s.Data, &entity.SMSData{
+		entities = append(entities, &entity.SMSData{
 			Сountry:      country,
 			Bandwidth:    params[1],
 			ResponseTime: params[2],
 			Provider:     provider,
 		})
 	}
+
+	return entities, nil
 }

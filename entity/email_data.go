@@ -1,7 +1,25 @@
 package entity
 
+import "github.com/admsvist/go-diploma/internal/pkg/sorts"
+
 type EmailData struct {
-	Country      string // alpha-2 — код страны;
-	Provider     string // провайдер;
-	DeliveryTime int    // среднее время доставки писем в миллисекундах.
+	Country      string `json:"country"`      // alpha-2 — код страны;
+	Provider     string `json:"provider"`     // провайдер;
+	DeliveryTime int    `json:"deliveryTime"` // среднее время доставки писем в миллисекундах.
+}
+
+type EmailDataSlice []*EmailData
+
+func (s EmailDataSlice) Len() int {
+	return len(s)
+}
+
+func (s EmailDataSlice) Swap(i, j int) {
+	s[i], s[j] = s[j], s[i]
+}
+
+func (s EmailDataSlice) SortByDeliveryTime() {
+	sorts.SelectionSort(s, func(i, j int) bool {
+		return s[i].DeliveryTime < s[j].DeliveryTime
+	})
 }

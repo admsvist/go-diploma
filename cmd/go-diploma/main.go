@@ -3,70 +3,28 @@ package main
 import (
 	"context"
 	"flag"
-	"fmt"
+	"github.com/admsvist/go-diploma/api/handler"
 	"github.com/admsvist/go-diploma/country_codes"
-	"github.com/admsvist/go-diploma/internal/pkg/repository"
-	"github.com/admsvist/go-diploma/pkg/filereader"
+	"github.com/gorilla/mux"
 	"log"
 	"net/http"
 	"os"
 	"os/signal"
 	"time"
-
-	"github.com/gorilla/mux"
 )
 
 const countryCodesPath = "./codes.json"
-const smsDataPath = "./../simulator/sms.data"
-const voiceCallDataPath = "./../simulator/voice.data"
-const emailDataPath = "./../simulator/email.data"
-const billingDataPath = "./../simulator/billing.data"
-const mmsUrl = "http://127.0.0.1:8383/mms"
-const supportUrl = "http://127.0.0.1:8383/support"
-const incidentUrl = "http://127.0.0.1:8383/accendent"
 
 func main() {
-	reader := filereader.New()
+	country_codes.Init(countryCodesPath)
 
-	country_codes.Init(reader, countryCodesPath)
-
-	smsDataRepository := repository.NewSMSDataRepository()
-	smsDataRepository.LoadData(reader, smsDataPath)
-
-	mmsDataRepository := repository.NewMMSDataRepository()
-	mmsDataRepository.LoadData(mmsUrl)
-
-	voiceCallDataRepository := repository.NewVoiceCallDataRepository()
-	voiceCallDataRepository.LoadData(reader, voiceCallDataPath)
-
-	emailDataRepository := repository.NewEmailDataRepository()
-	emailDataRepository.LoadData(reader, emailDataPath)
-
-	billingDataRepository := repository.NewBillingDataRepository()
-	billingDataRepository.LoadData(reader, billingDataPath)
-
-	supportDataRepository := repository.NewSupportDataRepository()
-	supportDataRepository.LoadData(supportUrl)
-
-	incidentDataRepository := repository.NewIncidentDataRepository()
-	incidentDataRepository.LoadData(incidentUrl)
-
-	//fmt.Println(smsDataRepository.Data)
-	//fmt.Println(mmsDataRepository.Data)
-	//fmt.Println(voiceCallDataRepository.Data)
-	//fmt.Println(emailDataRepository.Data)
-	//fmt.Printf("%+v\n", billingDataRepository.Data[0])
-	//fmt.Println(supportDataRepository.Data)
-	fmt.Println(incidentDataRepository.Data)
-}
-
-func qmain() {
 	var wait time.Duration
 	flag.DurationVar(&wait, "graceful-timeout", time.Second*15, "the duration for which the server gracefully wait for existing connections to finish - e.g. 15s or 1m")
 	flag.Parse()
 
 	r := mux.NewRouter()
 	r.HandleFunc("/", handleConnection)
+	r.HandleFunc("/test", handler.TestHandler)
 
 	srv := &http.Server{
 		Addr: "127.0.0.1:8282",
