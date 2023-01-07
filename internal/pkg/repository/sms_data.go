@@ -38,7 +38,7 @@ func (s *SMSDataRepository) GetAll() ([]*entity.SMSData, error) {
 		}
 
 		entities = append(entities, &entity.SMSData{
-			Сountry:      country,
+			Country:      country,
 			Bandwidth:    params[1],
 			ResponseTime: params[2],
 			Provider:     provider,

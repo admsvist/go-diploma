@@ -8,5 +8,5 @@ type VoiceCallData struct {
 	ConnectionStability float32 `json:"connection_stability"` // стабильность соединения;
 	TTFB                int     `json:"ttfb"`                 // ?
 	VoicePurity         int     `json:"voice_purity"`         // чистота TTFB-связи;
-	MedianOfCallsTime   int     `json:"median_of_calls_time"` // медиана длительности звонка.
+	MedianOfCallsTime   int     `json:"median_of_call_time"`  // медиана длительности звонка.
 }

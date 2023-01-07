@@ -37,6 +37,7 @@ func TestHandler(w http.ResponseWriter, r *http.Request) {
 
 	// возврат ответа сервера
 	w.Header().Set("Content-Type", "application/json")
+	w.Header().Set("Access-Control-Allow-Origin", "*")
 	w.Write(data)
 }
 
@@ -106,7 +107,7 @@ func prepareSMSData() ([][]*entity.SMSData, error) {
 	entity.SMSDataSlice(byCountryData).SortByCountry()
 
 	for i, v := range entities {
-		entities[i].Сountry = country_codes.GetFullCountryName(v.Сountry)
+		entities[i].Country = country_codes.GetFullCountryName(v.Country)
 	}
 
 	result := make([][]*entity.SMSData, 0)

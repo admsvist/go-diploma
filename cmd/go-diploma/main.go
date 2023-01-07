@@ -25,6 +25,7 @@ func main() {
 	r := mux.NewRouter()
 	r.HandleFunc("/", handleConnection)
 	r.HandleFunc("/status", handler.TestHandler)
+	r.Use(mux.CORSMethodMiddleware(r))
 
 	srv := &http.Server{
 		Addr: "127.0.0.1:8282",
@@ -64,6 +65,8 @@ func main() {
 }
 
 func handleConnection(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Content-Type", "application/json")
+	w.Header().Set("Access-Control-Allow-Origin", "*")
 	w.WriteHeader(http.StatusOK)
 	w.Write([]byte("OK"))
 }
