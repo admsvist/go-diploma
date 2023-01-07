@@ -24,7 +24,7 @@ func main() {
 
 	r := mux.NewRouter()
 	r.HandleFunc("/", handleConnection)
-	r.HandleFunc("/test", handler.TestHandler)
+	r.HandleFunc("/status", handler.TestHandler)
 
 	srv := &http.Server{
 		Addr: "127.0.0.1:8282",

@@ -3,9 +3,9 @@ package entity
 import "github.com/admsvist/go-diploma/internal/pkg/sorts"
 
 type EmailData struct {
-	Country      string `json:"country"`      // alpha-2 — код страны;
-	Provider     string `json:"provider"`     // провайдер;
-	DeliveryTime int    `json:"deliveryTime"` // среднее время доставки писем в миллисекундах.
+	Country      string `json:"country"`       // alpha-2 — код страны;
+	Provider     string `json:"provider"`      // провайдер;
+	DeliveryTime int    `json:"delivery_time"` // среднее время доставки писем в миллисекундах.
 }
 
 type EmailDataSlice []*EmailData

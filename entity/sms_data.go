@@ -3,10 +3,10 @@ package entity
 import "github.com/admsvist/go-diploma/internal/pkg/sorts"
 
 type SMSData struct {
-	Сountry      string `json:"сountry"`      // alpha-2 — код страны;
-	Bandwidth    string `json:"bandwidth"`    // пропускная способность канала от 0 до 100%;
-	ResponseTime string `json:"responseTime"` // среднее время ответа в миллисекундах;
-	Provider     string `json:"provider"`     // название компании-провайдера.
+	Сountry      string `json:"сountry"`       // alpha-2 — код страны;
+	Bandwidth    string `json:"bandwidth"`     // пропускная способность канала от 0 до 100%;
+	ResponseTime string `json:"response_time"` // среднее время ответа в миллисекундах;
+	Provider     string `json:"provider"`      // название компании-провайдера.
 }
 
 type SMSDataSlice []*SMSData

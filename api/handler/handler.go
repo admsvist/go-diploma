@@ -17,60 +17,19 @@ const supportUrl = "http://127.0.0.1:8383/support"
 const incidentUrl = "http://127.0.0.1:8383/accendent"
 
 func TestHandler(w http.ResponseWriter, r *http.Request) {
-	sms, err := prepareSMSData()
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-		return
-	}
+	result := entity.ResultT{}
 
-	mms, err := prepareMMSData()
+	entities, err := getResultData()
 	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-		return
-	}
-
-	voiceCall, err := prepareVoiceCallData()
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-		return
-	}
-
-	email, err := prepareEmailData()
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-		return
-	}
-
-	billing, err := prepareBillingData()
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-		return
-	}
-
-	support, err := prepareSupportData()
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-		return
-	}
-
-	incident, err := prepareIncidentData()
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-		return
-	}
-
-	entities := entity.ResultSetT{
-		SMS:       sms,
-		MMS:       mms,
-		VoiceCall: voiceCall,
-		Email:     email,
-		Billing:   billing,
-		Support:   support,
-		Incidents: incident,
+		result.Status = false
+		result.Error = err.Error()
+	} else {
+		result.Status = true
+		result.Data = entities
 	}
 
 	// сериализация сущностей в JSON
-	data, err := json.Marshal(entities)
+	data, err := json.Marshal(result)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
@@ -79,6 +38,53 @@ func TestHandler(w http.ResponseWriter, r *http.Request) {
 	// возврат ответа сервера
 	w.Header().Set("Content-Type", "application/json")
 	w.Write(data)
+}
+
+func getResultData() (*entity.ResultSetT, error) {
+	sms, err := prepareSMSData()
+	if err != nil {
+		return nil, err
+	}
+
+	mms, err := prepareMMSData()
+	if err != nil {
+		return nil, err
+	}
+
+	voiceCall, err := prepareVoiceCallData()
+	if err != nil {
+		return nil, err
+	}
+
+	email, err := prepareEmailData()
+	if err != nil {
+		return nil, err
+	}
+
+	billing, err := prepareBillingData()
+	if err != nil {
+		return nil, err
+	}
+
+	support, err := prepareSupportData()
+	if err != nil {
+		return nil, err
+	}
+
+	incident, err := prepareIncidentData()
+	if err != nil {
+		return nil, err
+	}
+
+	return &entity.ResultSetT{
+		SMS:       sms,
+		MMS:       mms,
+		VoiceCall: voiceCall,
+		Email:     email,
+		Billing:   billing,
+		Support:   support,
+		Incidents: incident,
+	}, nil
 }
 
 func prepareSMSData() ([][]*entity.SMSData, error) {
