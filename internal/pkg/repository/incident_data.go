@@ -2,6 +2,7 @@ package repository
 
 import (
 	"encoding/json"
+	"errors"
 	"github.com/admsvist/go-diploma/entity"
 	"io"
 	"net/http"
@@ -20,7 +21,7 @@ func (s *IncidentDataRepository) GetAll() ([]*entity.IncidentData, error) {
 	defer response.Body.Close()
 
 	if response.StatusCode != http.StatusOK {
-		return nil, err
+		return nil, errors.New("invalid status code")
 	}
 
 	// Прочитать содержимое ответа в байтовый срез

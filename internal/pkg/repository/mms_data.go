@@ -2,6 +2,7 @@ package repository
 
 import (
 	"encoding/json"
+	"errors"
 	"github.com/admsvist/go-diploma/country_codes"
 	"github.com/admsvist/go-diploma/entity"
 	"io"
@@ -21,7 +22,7 @@ func (s *MMSDataRepository) GetAll() ([]*entity.MMSData, error) {
 	defer response.Body.Close()
 
 	if response.StatusCode != http.StatusOK {
-		return nil, err
+		return nil, errors.New("invalid status code")
 	}
 
 	// Прочитать содержимое ответа в байтовый срез
