@@ -6,6 +6,7 @@ import (
 	"github.com/admsvist/go-diploma/entity"
 	"github.com/admsvist/go-diploma/internal/pkg/repository"
 	"net/http"
+	"sync"
 )
 
 const smsDataPath = "./../simulator/sms.data"
@@ -16,22 +17,120 @@ const mmsUrl = "http://127.0.0.1:8383/mms"
 const supportUrl = "http://127.0.0.1:8383/support"
 const incidentUrl = "http://127.0.0.1:8383/accendent"
 
-func TestHandler(w http.ResponseWriter, r *http.Request) {
-	result := entity.ResultT{}
+var (
+	resultSetT entity.ResultSetT
+	die        error
+	mutex      sync.Mutex
+)
 
-	entities, err := getResultData()
-	if err != nil {
-		result.Status = false
-		result.Error = err.Error()
+func handleError(e error) {
+	die = e
+}
+
+func getResponse() entity.ResultT {
+	var response entity.ResultT
+
+	if die != nil {
+		response.Status = false
+		response.Data = nil
+		response.Error = die.Error()
 	} else {
-		result.Status = true
-		result.Data = entities
+		response.Status = true
+		response.Data = &resultSetT
+		response.Error = ""
 	}
 
+	return response
+}
+
+func TestHandler(w http.ResponseWriter, r *http.Request) {
+	var wg sync.WaitGroup
+	wg.Add(7)
+
+	go func(wg *sync.WaitGroup) {
+		defer wg.Done()
+		sms, e := prepareSMSData()
+		mutex.Lock()
+		defer mutex.Unlock()
+		if e != nil {
+			handleError(e)
+		}
+		resultSetT.SMS = sms
+	}(&wg)
+
+	go func(wg *sync.WaitGroup) {
+		defer wg.Done()
+		mms, e := prepareMMSData()
+		mutex.Lock()
+		defer mutex.Unlock()
+		if e != nil {
+			handleError(e)
+		}
+		resultSetT.MMS = mms
+	}(&wg)
+
+	go func(wg *sync.WaitGroup) {
+		defer wg.Done()
+		voiceCall, e := prepareVoiceCallData()
+		mutex.Lock()
+		defer mutex.Unlock()
+		if e != nil {
+			handleError(e)
+		}
+		resultSetT.VoiceCall = voiceCall
+	}(&wg)
+
+	go func(wg *sync.WaitGroup) {
+		defer wg.Done()
+		email, e := prepareEmailData()
+		mutex.Lock()
+		defer mutex.Unlock()
+		if e != nil {
+			handleError(e)
+		}
+		resultSetT.Email = email
+	}(&wg)
+
+	go func(wg *sync.WaitGroup) {
+		defer wg.Done()
+		billing, e := prepareBillingData()
+		mutex.Lock()
+		defer mutex.Unlock()
+		if e != nil {
+			handleError(e)
+		}
+		resultSetT.Billing = billing
+	}(&wg)
+
+	go func(wg *sync.WaitGroup) {
+		defer wg.Done()
+		support, e := prepareSupportData()
+		mutex.Lock()
+		defer mutex.Unlock()
+		if e != nil {
+			handleError(e)
+		}
+		resultSetT.Support = support
+	}(&wg)
+
+	go func(wg *sync.WaitGroup) {
+		defer wg.Done()
+		incident, e := prepareIncidentData()
+		mutex.Lock()
+		defer mutex.Unlock()
+		if e != nil {
+			handleError(e)
+		}
+		resultSetT.Incidents = incident
+	}(&wg)
+
+	wg.Wait()
+
 	// сериализация сущностей в JSON
-	data, err := json.Marshal(result)
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
+	response := getResponse()
+	data, e := json.Marshal(response)
+	if e != nil {
+		http.Error(w, e.Error(), http.StatusInternalServerError)
 		return
 	}
 
@@ -39,53 +138,6 @@ func TestHandler(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 	w.Header().Set("Access-Control-Allow-Origin", "*")
 	w.Write(data)
-}
-
-func getResultData() (*entity.ResultSetT, error) {
-	sms, err := prepareSMSData()
-	if err != nil {
-		return nil, err
-	}
-
-	mms, err := prepareMMSData()
-	if err != nil {
-		return nil, err
-	}
-
-	voiceCall, err := prepareVoiceCallData()
-	if err != nil {
-		return nil, err
-	}
-
-	email, err := prepareEmailData()
-	if err != nil {
-		return nil, err
-	}
-
-	billing, err := prepareBillingData()
-	if err != nil {
-		return nil, err
-	}
-
-	support, err := prepareSupportData()
-	if err != nil {
-		return nil, err
-	}
-
-	incident, err := prepareIncidentData()
-	if err != nil {
-		return nil, err
-	}
-
-	return &entity.ResultSetT{
-		SMS:       sms,
-		MMS:       mms,
-		VoiceCall: voiceCall,
-		Email:     email,
-		Billing:   billing,
-		Support:   support,
-		Incidents: incident,
-	}, nil
 }
 
 func prepareSMSData() ([][]*entity.SMSData, error) {
