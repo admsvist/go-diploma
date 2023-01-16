@@ -3,8 +3,8 @@ package repository
 import (
 	"encoding/json"
 	"errors"
-	"github.com/admsvist/go-diploma/country_codes"
 	"github.com/admsvist/go-diploma/entity"
+	"github.com/admsvist/go-diploma/usecase/country_codes"
 	"io"
 	"net/http"
 )

@@ -1,8 +1,8 @@
 package repository
 
 import (
-	"github.com/admsvist/go-diploma/country_codes"
 	"github.com/admsvist/go-diploma/entity"
+	"github.com/admsvist/go-diploma/usecase/country_codes"
 	"os"
 	"strconv"
 	"strings"

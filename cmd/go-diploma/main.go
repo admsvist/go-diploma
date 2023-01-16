@@ -4,7 +4,7 @@ import (
 	"context"
 	"flag"
 	"github.com/admsvist/go-diploma/api/handler"
-	"github.com/admsvist/go-diploma/country_codes"
+	"github.com/admsvist/go-diploma/usecase/country_codes"
 	"github.com/gorilla/mux"
 	"log"
 	"net/http"

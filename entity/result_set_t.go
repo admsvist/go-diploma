@@ -1,7 +1,7 @@
 package entity
 
 import (
-	"github.com/admsvist/go-diploma/country_codes"
+	"github.com/admsvist/go-diploma/usecase/country_codes"
 )
 
 type ResultSetT struct {

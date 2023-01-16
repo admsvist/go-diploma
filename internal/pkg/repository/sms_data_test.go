@@ -2,7 +2,7 @@ package repository
 
 import (
 	"fmt"
-	"github.com/admsvist/go-diploma/country_codes"
+	"github.com/admsvist/go-diploma/usecase/country_codes"
 	"os"
 	"testing"
 )

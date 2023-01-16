@@ -3,7 +3,7 @@ package handler
 import (
 	"encoding/json"
 	"github.com/admsvist/go-diploma/entity"
-	"github.com/admsvist/go-diploma/internal/pkg/service"
+	"github.com/admsvist/go-diploma/usecase/service"
 	"net/http"
 	"time"
 )
@@ -20,10 +20,7 @@ func TestHandler(w http.ResponseWriter, r *http.Request) {
 
 	// заполняем объект
 	if resultT == nil {
-		resultT = &entity.ResultT{
-			Data: &entity.ResultSetT{},
-		}
-		service.Fill(resultT)
+		resultT = service.GetResultT()
 	}
 
 	// сериализация сущностей в JSON

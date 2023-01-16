@@ -1,6 +1,8 @@
 package entity
 
-import "github.com/admsvist/go-diploma/internal/pkg/sorts"
+import (
+	"github.com/admsvist/go-diploma/pkg/sorts"
+)
 
 type EmailData struct {
 	Country      string `json:"country"`       // alpha-2 — код страны;
